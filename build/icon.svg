@@ -1,0 +1,37 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 256 256" width="256" height="256">
+  <defs>
+    <linearGradient id="bg" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" stop-color="#2f6fd0"/>
+      <stop offset="1" stop-color="#1e4a8f"/>
+    </linearGradient>
+    <linearGradient id="page" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" stop-color="#ffffff"/>
+      <stop offset="1" stop-color="#e4ebf5"/>
+    </linearGradient>
+  </defs>
+
+  <rect x="8" y="8" width="240" height="240" rx="46" fill="url(#bg)"/>
+
+  <!-- open book -->
+  <path d="M40 78 C70 62 100 62 124 76 L124 190 C100 176 70 176 40 192 Z"
+        fill="url(#page)"/>
+  <path d="M216 78 C186 62 156 62 132 76 L132 190 C156 176 186 176 216 192 Z"
+        fill="url(#page)"/>
+  <path d="M124 76 L132 76 L132 190 L124 190 Z" fill="#c3d0e2"/>
+
+  <!-- text lines -->
+  <g fill="#9db0cc">
+    <rect x="56" y="96" width="54" height="7" rx="3.5"/>
+    <rect x="56" y="114" width="54" height="7" rx="3.5"/>
+    <rect x="56" y="132" width="40" height="7" rx="3.5"/>
+    <rect x="146" y="96" width="54" height="7" rx="3.5"/>
+    <rect x="146" y="114" width="54" height="7" rx="3.5"/>
+    <rect x="146" y="132" width="40" height="7" rx="3.5"/>
+  </g>
+
+  <!-- sound badge -->
+  <circle cx="186" cy="184" r="48" fill="#ff9d2e" stroke="#ffffff" stroke-width="9"/>
+  <path d="M168 168 h12 l16 -14 v60 l-16 -14 h-12 z" fill="#ffffff"/>
+  <path d="M206 168 a24 24 0 0 1 0 32" fill="none" stroke="#ffffff"
+        stroke-width="8" stroke-linecap="round"/>
+</svg>

@@ -1,0 +1,72 @@
+EPUB to MP3 - licensing
+=======================
+
+The application code in this project (everything under src\ and build\) is
+released under the MIT licence:
+
+    Copyright (c) 2026 the EPUB to MP3 contributors
+
+    Permission is hereby granted, free of charge, to any person obtaining a
+    copy of this software and associated documentation files (the "Software"),
+    to deal in the Software without restriction, including without limitation
+    the rights to use, copy, modify, merge, publish, distribute, sublicense,
+    and/or sell copies of the Software, and to permit persons to whom the
+    Software is furnished to do so, subject to the following conditions:
+
+    The above copyright notice and this permission notice shall be included in
+    all copies or substantial portions of the Software.
+
+    THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+    IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+    FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL
+    THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+    LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING
+    FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
+    DEALINGS IN THE SOFTWARE.
+
+
+PLEASE READ THIS PART IF YOU PLAN TO SHARE THE BUILT PROGRAM
+------------------------------------------------------------
+
+The finished executable bundles several third-party components, and two of
+them are covered by the GNU General Public License v3:
+
+    espeak-ng      GPL v3     turns text into phonemes
+    phonemizer     GPL v3     the Python wrapper around espeak-ng
+
+Because these are linked into the shipped program, the combined work that you
+distribute is effectively governed by the GPL v3. In practice that means: if
+you give the .exe or the installer to other people, you should also be willing
+to give them the corresponding source code, and you cannot add restrictions on
+top. Keeping this project folder alongside the build, or publishing it, is the
+easiest way to satisfy that.
+
+Personal use, or handing it to a friend along with this folder, is fine.
+Selling it as closed-source software is not.
+
+The remaining components are permissively licensed:
+
+    Kokoro TTS model    Apache 2.0    the voices themselves
+    kokoro-onnx         MIT           model loading and inference
+    ONNX Runtime        MIT           neural network execution
+    NumPy               BSD 3-clause  array maths
+    Mutagen             GPL v2+       MP3 tagging
+    LAME (via lameenc)  LGPL v2+      MP3 encoding
+    Python              PSF           the language runtime
+
+Note that Mutagen is GPL v2 or later, which is compatible with the GPL v3
+conclusion above.
+
+Full licence texts ship with each package inside dist\EpubToMP3\_internal\ and
+are also available from each project's home page.
+
+
+A NOTE ON THE BOOKS THEMSELVES
+------------------------------
+
+Converting a book you own for your own listening is generally fine in most
+places, but copyright law varies by country and commercial audiobook rights are
+usually held separately from print rights. Distributing audio you generate from
+a copyrighted EPUB is a different matter entirely. This program does not check,
+and cannot advise you - if you are unsure, that is a question for a lawyer
+rather than for software.

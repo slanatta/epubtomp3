@@ -1,0 +1,159 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Build it on GitHub - nothing to install</title>
+<style>
+  :root { color-scheme: light dark; }
+  body {
+    font-family: -apple-system, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+    max-width: 720px; margin: 0 auto; padding: 26px 20px 80px;
+    line-height: 1.6; color: #1b1b1f; background: #fff;
+    -webkit-text-size-adjust: 100%;
+  }
+  h1 { font-size: 1.6rem; line-height: 1.25; margin: 0 0 .25em; }
+  h2 { font-size: 1.18rem; margin: 2em 0 .5em; padding-bottom: .25em;
+       border-bottom: 2px solid #e6e8ec; }
+  .lede { color: #52565e; margin: 0 0 1.5em; }
+  code { font-family: ui-monospace, Consolas, monospace; font-size: .9em;
+         background: #f1f3f6; padding: .12em .38em; border-radius: 4px;
+         overflow-wrap: break-word; }
+  ol.steps { list-style: none; counter-reset: s; padding: 0; margin: 1.5em 0; }
+  ol.steps > li {
+    counter-increment: s; position: relative;
+    padding: 0 0 1.5em 3.1em; margin: 0;
+    border-left: 2px solid #e2e5ea; margin-left: 1.1em;
+  }
+  ol.steps > li:last-child { border-left-color: transparent; padding-bottom: .4em; }
+  ol.steps > li::before {
+    content: counter(s);
+    position: absolute; left: -1.15rem; top: -.12em;
+    width: 2.2rem; height: 2.2rem; border-radius: 50%;
+    background: #1a5fb4; color: #fff;
+    display: flex; align-items: center; justify-content: center;
+    font-weight: 700; font-size: .95rem;
+  }
+  ol.steps h3 { margin: .15em 0 .4em; font-size: 1.03rem; }
+  ol.steps p { margin: .4em 0; }
+  .box { border-left: 4px solid #c8ccd4; background: #f7f8fa;
+         padding: 12px 15px; border-radius: 0 6px 6px 0; margin: 1.1em 0;
+         font-size: .95rem; }
+  .box.warn { border-left-color: #e0a030; background: #fff9ec; }
+  .box.good { border-left-color: #3a9b62; background: #eefaf2; }
+  .box p:first-child { margin-top: 0; }
+  .box p:last-child { margin-bottom: 0; }
+  ul { padding-left: 1.25em; }
+  li { margin-bottom: .35em; }
+  hr { border: 0; border-top: 1px solid #e6e8ec; margin: 2.4em 0; }
+  @media (prefers-color-scheme: dark) {
+    body { background: #16181c; color: #e4e6ea; }
+    h2 { border-bottom-color: #2c3038; }
+    .lede { color: #a0a5ae; }
+    code { background: #24272e; }
+    ol.steps > li { border-left-color: #2c3038; }
+    .box { background: #1c1f25; border-left-color: #3a3f48; }
+    .box.warn { background: #251f14; border-left-color: #b8862a; }
+    .box.good { background: #14231a; border-left-color: #3a9b62; }
+  }
+</style>
+</head>
+<body>
+
+<h1>Build it on GitHub</h1>
+<p class="lede">Microsoft's own Windows servers do the build. Nothing installs on
+your PC &mdash; not Python, not Inno Setup. You upload the folder, press a
+button, and download the finished installer about fifteen minutes later.</p>
+
+<div class="box good">
+<p>It's free. Public repositories get unlimited build time; the source is
+GPL&nbsp;v3 anyway, so making it public also settles the licence obligation in
+one go.</p>
+</div>
+
+<h2>Steps</h2>
+
+<ol class="steps">
+
+<li>
+<h3>Get a GitHub account</h3>
+<p>Free, at <code>github.com</code>. Skip if you already have one.</p>
+</li>
+
+<li>
+<h3>Make a new repository</h3>
+<p>Click <strong>+</strong> at the top right &rarr; <strong>New repository</strong>.
+Call it <code>epub2mp3</code>. Choose <strong>Public</strong>. Leave every other
+box unticked &mdash; do <em>not</em> add a README, it just gets in the way.
+Click <strong>Create repository</strong>.</p>
+</li>
+
+<li>
+<h3>Upload the files</h3>
+<p>On the empty repository page, click <strong>uploading an existing file</strong>.</p>
+<p>Unzip <code>EpubToMP3-source.zip</code> on your PC, then <strong>open the
+<code>EpubToMP3-source</code> folder</strong>, select everything inside it, and
+drag that into the browser.</p>
+<div class="box warn">
+<p><strong>This is the one step that can go wrong.</strong> Drag the
+<em>contents</em>, not the folder itself. When it's right, the file list in your
+repository starts with <code>.github</code>, <code>build</code>,
+<code>src</code>, <code>tests</code>. If you instead see a single
+<code>EpubToMP3-source</code> folder, delete the repository and try again
+&mdash; GitHub only notices the build recipe when it sits at the top level.</p>
+</div>
+<p>Scroll down, click <strong>Commit changes</strong>.</p>
+</li>
+
+<li>
+<h3>Run the build</h3>
+<p>Click the <strong>Actions</strong> tab. Pick
+<strong>Build Windows installer</strong> on the left, then the
+<strong>Run workflow</strong> button on the right, and confirm.</p>
+<p>A yellow dot means it's running, and it takes about ten to fifteen minutes.
+Green tick means done. Red X means something failed &mdash; click into it, and
+send me whatever the red step says.</p>
+</li>
+
+<li>
+<h3>Download the installer</h3>
+<p>Click the finished run, scroll to the bottom, and under
+<strong>Artifacts</strong> you'll find:</p>
+<ul>
+<li><strong>EpubToMP3-Setup</strong> &mdash; the installer. This is the one you want.</li>
+<li><strong>EpubToMP3-portable</strong> &mdash; the same program as a plain folder,
+    if you'd rather not install anything.</li>
+</ul>
+<p>They download as .zip files; unzip to get the <code>Setup.exe</code> inside.</p>
+</li>
+
+</ol>
+
+<h2>What the build actually checks</h2>
+<p>It doesn't just compile blindly. Before it hands you anything, the workflow
+runs the test suite, then runs the <em>finished executable</em> against a
+generated test book to confirm it can still read an EPUB. If any of that fails,
+the build goes red rather than producing a broken installer.</p>
+
+<h2>Making a shareable link later</h2>
+<p>Build artifacts sit behind a GitHub login and expire after 90 days. If you
+want a plain download link to send people, create a tag: on the repository page
+go to <strong>Releases</strong> &rarr; <strong>Create a new release</strong>,
+type <code>v1.0.0</code> as the tag, and publish. That triggers the same build
+and attaches the installer to a permanent public page.</p>
+
+<h2>If you change your mind</h2>
+<p>Everything still works the old way too. Install Python 3.12 on your PC and
+double-click <code>build.bat</code> &mdash; see
+<code>BUILD-INSTRUCTIONS.html</code>. The two routes produce the same installer.</p>
+
+<hr>
+<div class="box warn">
+<p><strong>Still expected on first launch:</strong> Windows SmartScreen will warn
+about the program, because it isn't code-signed. Click <em>More info</em> &rarr;
+<em>Run anyway</em>. Building on GitHub doesn't change that &mdash; only a paid
+certificate would.</p>
+</div>
+
+</body>
+</html>

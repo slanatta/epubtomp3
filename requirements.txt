@@ -1,0 +1,12 @@
+# Pinned to the exact versions this build was tested against.
+# Loosen them only if you are prepared to re-test the frozen executable.
+kokoro-onnx==0.5.0
+onnxruntime==1.28.0
+numpy>=2.0.2,<3
+phonemizer-fork==3.3.2
+espeakng-loader>=0.2.4
+lameenc==1.8.4
+mutagen==1.48.1
+
+# Build-time only
+pyinstaller==6.22.0

@@ -1,0 +1,32 @@
+# UTF-8
+#
+# Windows file-version resource. Shown on the .exe Properties > Details tab and
+# used by SmartScreen reputation. Keep the numbers in sync with __init__.py.
+VSVersionInfo(
+  ffi=FixedFileInfo(
+    filevers=(1, 0, 0, 0),
+    prodvers=(1, 0, 0, 0),
+    mask=0x3f,
+    flags=0x0,
+    OS=0x40004,
+    fileType=0x1,
+    subtype=0x0,
+    date=(0, 0)
+  ),
+  kids=[
+    StringFileInfo(
+      [
+        StringTable(
+          u'040904B0',
+          [StringStruct(u'CompanyName', u'EPUB to MP3'),
+           StringStruct(u'FileDescription', u'EPUB to MP3 - offline audiobook maker'),
+           StringStruct(u'FileVersion', u'1.0.0.0'),
+           StringStruct(u'InternalName', u'EpubToMP3'),
+           StringStruct(u'LegalCopyright', u'Open source. Kokoro TTS model, Apache 2.0.'),
+           StringStruct(u'OriginalFilename', u'EpubToMP3.exe'),
+           StringStruct(u'ProductName', u'EPUB to MP3'),
+           StringStruct(u'ProductVersion', u'1.0.0.0')])
+      ]),
+    VarFileInfo([VarStruct(u'Translation', [1033, 1200])])
+  ]
+)

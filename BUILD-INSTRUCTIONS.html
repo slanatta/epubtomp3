@@ -1,0 +1,223 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>EPUB to MP3 - how to build the Windows installer</title>
+<style>
+  :root { color-scheme: light dark; }
+  body {
+    font-family: -apple-system, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+    max-width: 780px; margin: 0 auto; padding: 28px 20px 80px;
+    line-height: 1.6; color: #1b1b1f; background: #fff;
+    -webkit-text-size-adjust: 100%;
+  }
+  h1 { font-size: 1.7rem; line-height: 1.25; margin: 0 0 .2em; }
+  h2 { font-size: 1.22rem; margin: 2.2em 0 .5em; padding-bottom: .25em;
+       border-bottom: 2px solid #e6e8ec; }
+  h3 { font-size: 1.02rem; margin: 1.6em 0 .35em; }
+  .lede { color: #52565e; font-size: 1.02rem; margin: 0 0 1.6em; }
+  code { font-family: ui-monospace, Consolas, monospace; font-size: .92em;
+         background: #f1f3f6; padding: .12em .38em; border-radius: 4px; }
+  pre { background: #14161a; color: #e8eaed; padding: 14px 16px; border-radius: 8px;
+        overflow-x: auto; font-size: .86rem; line-height: 1.5; }
+  pre code { background: none; padding: 0; color: inherit; }
+  ol { padding-left: 1.3em; }
+  ol > li { margin-bottom: 1.1em; }
+  ul { padding-left: 1.25em; }
+  li { margin-bottom: .4em; }
+  .step-title { font-weight: 600; }
+  .box { border-left: 4px solid #c8ccd4; background: #f7f8fa;
+         padding: 12px 16px; border-radius: 0 6px 6px 0; margin: 1.2em 0; }
+  .box.warn { border-left-color: #e0a030; background: #fff9ec; }
+  .box.info { border-left-color: #3b7dd8; background: #eff5fd; }
+  .box.good { border-left-color: #3a9b62; background: #eefaf2; }
+  .box p:first-child { margin-top: 0; }
+  .box p:last-child { margin-bottom: 0; }
+  table { border-collapse: collapse; width: 100%; margin: 1.1em 0; font-size: .93rem; }
+  th, td { border: 1px solid #dfe2e8; padding: 8px 10px; text-align: left;
+           vertical-align: top; }
+  th { background: #f4f6f9; font-weight: 600; }
+  .files td:first-child { white-space: nowrap; font-family: ui-monospace, Consolas, monospace;
+                          font-size: .88em; }
+  .tested li { margin-bottom: .3em; }
+  hr { border: 0; border-top: 1px solid #e6e8ec; margin: 2.5em 0; }
+  a { color: #1a5fb4; }
+  @media (prefers-color-scheme: dark) {
+    body { background: #16181c; color: #e4e6ea; }
+    h2 { border-bottom-color: #2c3038; }
+    .lede { color: #a0a5ae; }
+    code { background: #24272e; }
+    .box { background: #1c1f25; border-left-color: #3a3f48; }
+    .box.warn { background: #251f14; border-left-color: #b8862a; }
+    .box.info { background: #151d29; border-left-color: #3b7dd8; }
+    .box.good { background: #14231a; border-left-color: #3a9b62; }
+    th { background: #212429; }
+    th, td { border-color: #2c3038; }
+    a { color: #7aa9ee; }
+  }
+</style>
+</head>
+<body>
+
+<h1>EPUB to MP3</h1>
+<p class="lede">A rebuilt version of your friend's converter, packaged as a
+Windows installer. The finished program needs no Python, no virtual
+environment, and no internet after the first launch.</p>
+
+<div class="box info">
+<p><strong>What changed from the original.</strong> The old script was a small
+window that ran a separate <code>kokoro-tts</code> command, which is why it
+needed Python, a virtual environment, and a hunt through folders to find things.
+This version has the speech engine built into it. Same voices, no plumbing.</p>
+</div>
+
+<div class="box good">
+<p><strong>Don't want to install anything?</strong> Open
+<code>GITHUB-BUILD.html</code> instead. GitHub's Windows servers can do the whole
+build for free &mdash; you upload the folder, press a button, and download the
+finished installer. This page covers the local route.</p>
+</div>
+
+<h2>What you need on the build machine</h2>
+
+<table>
+<tr><th>Tool</th><th>Where</th><th>Why</th></tr>
+<tr>
+  <td><strong>Python 3.12</strong></td>
+  <td>python.org/downloads</td>
+  <td>Only to build. Tick <em>Add python.exe to PATH</em> during setup. 3.11 and
+      3.13 also work.</td>
+</tr>
+<tr>
+  <td><strong>Inno Setup 6</strong></td>
+  <td>jrsoftware.org/isdl.php</td>
+  <td>Turns the built folder into <code>Setup.exe</code>. Free. Default install
+      options are fine.</td>
+</tr>
+</table>
+
+<p>Neither is needed on the computers that will <em>run</em> the program.
+Roughly 3 GB of free disk space during the build, and about 15 minutes.</p>
+
+<h2>Building it</h2>
+
+<ol>
+<li>
+  <span class="step-title">Unzip this folder somewhere simple</span> &mdash;
+  <code>C:\epub2mp3</code> is ideal. Avoid OneDrive-synced folders and paths
+  with accented characters; both occasionally confuse PyInstaller.
+</li>
+<li>
+  <span class="step-title">Double-click <code>build.bat</code></span>.
+  A console window opens and works through six steps. The dependency download
+  is the slow part.
+</li>
+<li>
+  <span class="step-title">Collect the output from <code>dist\</code></span>:
+  <ul>
+    <li><code>EpubToMP3-1.0.0-Setup.exe</code> &mdash; the installer, roughly
+        90&ndash;130&nbsp;MB. This is the thing to hand to people.</li>
+    <li><code>EpubToMP3\</code> &mdash; the same program as a plain folder.
+        Copy it to a USB stick and it runs anywhere, no install needed.</li>
+  </ul>
+</li>
+</ol>
+
+<div class="box warn">
+<p><strong>If your antivirus interrupts the build</strong>, add an exclusion for
+the project folder and run <code>build.bat</code> again. PyInstaller assembles
+an executable at runtime, which heuristic scanners dislike on principle. It is
+a false positive, but a persistent one.</p>
+</div>
+
+<h3>Building without Inno Setup</h3>
+<p>If Inno Setup is missing, <code>build.bat</code> says so and stops after
+producing <code>dist\EpubToMP3\</code>. That folder is fully working &mdash; zip
+it and it runs on any Windows 10 or 11 machine. Install Inno Setup later and
+re-run the script to get the installer.</p>
+
+<h2>What people see when they run it</h2>
+
+<ol>
+<li><strong>SmartScreen warning on first launch.</strong> Unavoidable without a
+code-signing certificate, which costs a few hundred dollars a year. Click
+<em>More info</em> &rarr; <em>Run anyway</em>. It appears once.</li>
+
+<li><strong>A one-time 330&nbsp;MB download.</strong> The voice model, fetched
+on first launch with a progress bar, saved to
+<code>%LOCALAPPDATA%\EpubToMP3\models</code>. Everything after that is offline.</li>
+
+<li><strong>Then it just works.</strong> Pick a book, untick the chapters you do
+not want, preview a voice, convert. One tagged MP3 per chapter.</li>
+</ol>
+
+<div class="box good">
+<p><strong>For a machine that will never be online:</strong> run the program
+once on a connected PC, then copy <code>%LOCALAPPDATA%\EpubToMP3\models</code>
+across. Or drop the two model files into a folder named <code>models</code>
+beside <code>EpubToMP3.exe</code> &mdash; it looks there too.</p>
+</div>
+
+<h2>Speed</h2>
+<p>Kokoro runs about one to three times faster than real time on a normal
+laptop, and it uses every core you have. A ten-hour book is typically a three to
+eight hour job. Conversion can be stopped and resumed: finished chapters are
+kept, and re-running with <em>Skip chapters already converted</em> ticked picks
+up where it left off.</p>
+
+<h2>What was actually tested</h2>
+<p>The application code, the frozen build, and the conversion pipeline were all
+executed and verified before this was sent to you:</p>
+<ul class="tested">
+<li>Real Kokoro synthesis producing playable, correctly tagged MP3s &mdash;
+    verified levels, duration, bitrate and ID3 tags.</li>
+<li>EPUB&nbsp;2 (NCX) and EPUB&nbsp;3 (nav document) parsing, nested folders,
+    broken markup, missing metadata, non-EPUB input.</li>
+<li>Chapter selection, resume, mid-conversion cancellation, and recovery from a
+    failing passage &mdash; including that no half-written files are left behind.</li>
+<li>The PyInstaller bundle, run as a frozen executable, producing byte-identical
+    audio to the source version.</li>
+<li>The first-run model download, into a clean user profile with no model present.</li>
+</ul>
+
+<div class="box warn">
+<p><strong>The one piece that could not be tested here:</strong> the build ran on
+Linux, so the Windows-specific parts &mdash; the PyInstaller Windows bundle and
+the Inno Setup compile &mdash; will run for the first time on your machine. The
+scripts are written carefully and fail loudly rather than silently, but if
+something goes wrong it will be in those two steps. Send me whatever the console
+prints and it should be quick to sort out.</p>
+</div>
+
+<h2>What is in the folder</h2>
+<table class="files">
+<tr><th>Path</th><th>What it is</th></tr>
+<tr><td>build.bat</td><td>The one-click build. Start here.</td></tr>
+<tr><td>requirements.txt</td><td>Pinned dependency versions.</td></tr>
+<tr><td>src\epub2mp3\app.py</td><td>The window and all its controls.</td></tr>
+<tr><td>src\epub2mp3\engine.py</td><td>Chunking, synthesis, MP3 encoding, tagging.</td></tr>
+<tr><td>src\epub2mp3\epubread.py</td><td>EPUB parser, standard library only.</td></tr>
+<tr><td>src\epub2mp3\models.py</td><td>Finding and downloading the voice model.</td></tr>
+<tr><td>src\epub2mp3\cli.py</td><td>Console version, for troubleshooting.</td></tr>
+<tr><td>build\epub2mp3.spec</td><td>PyInstaller recipe.</td></tr>
+<tr><td>build\installer.iss</td><td>Inno Setup recipe.</td></tr>
+<tr><td>tests\</td><td>The checks listed above. Run with <code>python tests\test_units.py</code>.</td></tr>
+<tr><td>README.txt</td><td>Ships with the installed program, written for end users.</td></tr>
+<tr><td>LICENSE.txt</td><td>Licensing, including the GPL point below.</td></tr>
+</table>
+
+<h2>One licensing note worth reading</h2>
+<p>The program bundles <strong>espeak-ng</strong> and <strong>phonemizer</strong>,
+both GPL&nbsp;v3, so the finished executable is effectively GPL&nbsp;v3 too.
+Using it yourself or giving it to friends is fine. If you hand out the
+installer, hand out this source folder with it &mdash; that satisfies the licence.
+Selling it as closed software would not. Full detail is in
+<code>LICENSE.txt</code>.</p>
+
+<hr>
+<p style="color:#7a7f88; font-size:.9rem;">Voices are Kokoro v1.0 (Apache 2.0).
+Speech runs entirely on the local CPU &mdash; no text leaves the machine.</p>
+
+</body>
+</html>
