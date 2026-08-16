@@ -16,6 +16,11 @@ on:
 permissions:
   contents: write
 
+env:
+  # Make Python use UTF-8 everywhere. Windows otherwise defaults to a legacy
+  # code page, which turns any non-Latin character in a log line into a crash.
+  PYTHONUTF8: '1'
+
 jobs:
   build:
     runs-on: windows-latest
@@ -51,53 +56,81 @@ jobs:
       - name: Confirm the executable exists
         shell: pwsh
         run: |
-          if (-not (Test-Path "dist/EpubToMP3/EpubToMP3.exe")) {
-            Write-Error "PyInstaller finished but EpubToMP3.exe is missing."
+          $ErrorActionPreference = 'Continue'
+          if (-not (Test-Path 'dist/EpubToMP3/EpubToMP3.exe')) {
+            Write-Host '::error::PyInstaller finished but EpubToMP3.exe is missing.'
             exit 1
           }
-          $size = (Get-ChildItem -Recurse "dist/EpubToMP3" | Measure-Object -Property Length -Sum).Sum / 1MB
-          Write-Host ("Built folder is {0:N0} MB" -f $size)
+          # -File matters: directories have no Length, and measuring them raises
+          # an error that GitHub's strict mode would turn into a failed step.
+          $bytes = (Get-ChildItem -Recurse -File 'dist/EpubToMP3' |
+                    Measure-Object -Property Length -Sum).Sum
+          Write-Host ('Built folder: {0:N0} MB' -f ($bytes / 1MB))
+          exit 0
 
-      # Smoke test: the frozen build must be able to read an EPUB and list its
-      # chapters. This runs the real executable, not the source.
+      # Smoke test: run the FINISHED executable against a generated book. This
+      # is the check that would have caught a bundle missing its data files.
       - name: Smoke-test the frozen build
         shell: pwsh
         run: |
-          python tests/make_epub.py "$env:RUNNER_TEMP\smoke.epub"
-          $out = & "dist\EpubToMP3\EpubToMP3-cli.exe" "$env:RUNNER_TEMP\smoke.epub" --list-chapters 2>&1 | Out-String
+          $ErrorActionPreference = 'Continue'
+          $book = Join-Path $env:RUNNER_TEMP 'smoke.epub'
+          python tests/make_epub.py "$book"
+          $out = & 'dist\EpubToMP3\EpubToMP3-cli.exe' "$book" --list-chapters | Out-String
+          $code = $LASTEXITCODE
           Write-Host $out
-          if ($LASTEXITCODE -ne 0) { Write-Error "The frozen CLI exited with $LASTEXITCODE"; exit 1 }
-          if ($out -notmatch "Chapter One") {
-            Write-Error "The frozen build could not parse the test book."
+          if ($code -ne 0) {
+            Write-Host "::error::The frozen program exited with code $code."
             exit 1
           }
-          Write-Host "Frozen build reads EPUBs correctly."
+          if ($out -notmatch 'Chapter One') {
+            Write-Host '::error::The frozen program could not read the test book.'
+            exit 1
+          }
+          Write-Host 'Frozen build reads EPUBs correctly.'
+          exit 0
 
       - name: Locate or install Inno Setup
         id: inno
         shell: pwsh
         run: |
+          $ErrorActionPreference = 'Continue'
           $candidates = @(
             "${env:ProgramFiles(x86)}\Inno Setup 6\ISCC.exe",
             "${env:ProgramFiles}\Inno Setup 6\ISCC.exe"
           )
           $iscc = $candidates | Where-Object { Test-Path $_ } | Select-Object -First 1
           if (-not $iscc) {
-            Write-Host "Inno Setup not on the image, installing it..."
-            choco install innosetup --no-progress -y
+            Write-Host 'Inno Setup is not on this image, installing it...'
+            choco install innosetup --no-progress -y | Out-Host
             $iscc = $candidates | Where-Object { Test-Path $_ } | Select-Object -First 1
           }
-          if (-not $iscc) { Write-Error "Could not find or install Inno Setup."; exit 1 }
-          Write-Host "Using $iscc"
-          "iscc=$iscc" | Out-File -FilePath $env:GITHUB_OUTPUT -Append
+          if (-not $iscc) {
+            Write-Host '::error::Could not find or install Inno Setup.'
+            exit 1
+          }
+          Write-Host "Using: $iscc"
+          # Log the compiler version so we know which directives it supports.
+          # ISCC returns a nonzero code when printing usage, and GitHub checks
+          # $LASTEXITCODE at the end of every pwsh step - hence the explicit
+          # exit 0 below, or this diagnostic alone would fail the build.
+          (Get-Item $iscc).VersionInfo.ProductVersion |
+            ForEach-Object { Write-Host "Inno Setup version: $_" }
+          "iscc=$iscc" | Out-File -FilePath $env:GITHUB_OUTPUT -Append -Encoding utf8
+          exit 0
 
       - name: Build Setup.exe
         shell: pwsh
         run: |
-          & "${{ steps.inno.outputs.iscc }}" /Q "build\installer.iss"
-          Get-ChildItem "dist\*Setup.exe" | ForEach-Object {
-            Write-Host ("{0}  ({1:N0} MB)" -f $_.Name, ($_.Length / 1MB))
+          $ErrorActionPreference = 'Continue'
+          & '${{ steps.inno.outputs.iscc }}' /Q 'build\installer.iss'
+          if ($LASTEXITCODE -ne 0) {
+            Write-Host "::error::Inno Setup failed with code $LASTEXITCODE."
+            exit 1
           }
+          Get-ChildItem 'dist\*Setup.exe' -ErrorAction SilentlyContinue |
+            ForEach-Object { Write-Host ('{0}  ({1:N0} MB)' -f $_.Name, ($_.Length / 1MB)) }
+          exit 0
 
       - name: Upload the installer
         uses: actions/upload-artifact@v4
