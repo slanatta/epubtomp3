@@ -36,14 +36,12 @@ LZMANumBlockThreads=4
 PrivilegesRequired=lowest
 PrivilegesRequiredOverridesAllowed=dialog
 
-; "x64compatible" only exists from Inno Setup 6.3; fall back for older copies.
-#if Ver >= EncodeVer(6,3,0,0)
-ArchitecturesAllowed=x64compatible
-ArchitecturesInstallIn64BitMode=x64compatible
-#else
-ArchitecturesAllowed=x64
-ArchitecturesInstallIn64BitMode=x64
-#endif
+; Deliberately no ArchitecturesAllowed / ArchitecturesInstallIn64BitMode here.
+; The spelling of those values changed across Inno Setup 6.x ("x64" became
+; "x64compatible"), and guessing wrong stops the build outright. Leaving them
+; out costs nothing in practice: the default install is per-user, so the
+; program lands in %LocalAppData%\Programs either way, and the bundled
+; executable is 64-bit regardless of the installer's own mode.
 MinVersion=10.0
 
 [Languages]
