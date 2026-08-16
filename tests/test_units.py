@@ -1,9 +1,14 @@
 """Fast checks that do not need the TTS model."""
 import sys
+import tempfile
 import zipfile
 from pathlib import Path
 
 sys.path.insert(0, str(Path(__file__).resolve().parents[1] / "src"))
+
+# Scratch space. Must not be a hardcoded "/tmp" - on Windows that resolves to
+# C:\tmp, which does not exist, and every file check below would fail.
+TMP = Path(tempfile.gettempdir())
 
 from epub2mp3.engine import MAX_CHUNK, chunk_text, safe_filename   # noqa: E402
 from epub2mp3.epubread import clean_text, html_to_text, read_epub  # noqa: E402
@@ -75,7 +80,7 @@ print("read_epub")
 sys.path.insert(0, str(Path(__file__).resolve().parent))
 from make_epub import build      # noqa: E402
 
-tmp = Path("/tmp/units.epub")
+tmp = TMP / "units.epub"
 build(tmp)
 book = read_epub(str(tmp))
 check("reads title", book.title == "The Test Book: A Story", book.title)
@@ -87,7 +92,7 @@ check("uses NCX titles",
 check("chapters are in spine order",
       [c.index for c in book.chapters] == [1, 2, 3])
 
-bad = Path("/tmp/not-an-epub.epub")
+bad = TMP / "not-an-epub.epub"
 bad.write_bytes(b"this is not a zip file at all")
 try:
     read_epub(str(bad))
@@ -95,7 +100,7 @@ try:
 except Exception as exc:
     check("rejects non-EPUB input", True, type(exc).__name__)
 
-empty = Path("/tmp/empty.epub")
+empty = TMP / "empty.epub"
 with zipfile.ZipFile(empty, "w") as zf:
     zf.writestr("mimetype", "application/epub+zip")
 try:
