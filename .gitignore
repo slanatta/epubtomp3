@@ -1,0 +1,24 @@
+# Build output - never commit these, dist alone is ~200 MB
+dist/
+.buildwork/
+.buildenv/
+build/__pycache__/
+*.spec.bak
+
+# Python
+__pycache__/
+*.py[cod]
+*.egg-info/
+.venv/
+venv/
+
+# The voice model, if anyone drops it beside the source
+*.onnx
+voices*.bin
+
+# Editors and OS clutter
+.vscode/
+.idea/
+Thumbs.db
+desktop.ini
+.DS_Store

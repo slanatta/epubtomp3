@@ -18,7 +18,18 @@ from .engine import Synthesizer, convert_book, list_voices
 from .epubread import read_epub
 
 
+def _force_utf8_output() -> None:
+    """Windows consoles and pipes default to a legacy code page, so printing a
+    book title containing anything outside it would raise UnicodeEncodeError."""
+    for stream in (sys.stdout, sys.stderr):
+        try:
+            stream.reconfigure(encoding="utf-8", errors="replace")
+        except Exception:
+            pass
+
+
 def main(argv=None) -> int:
+    _force_utf8_output()
     parser = argparse.ArgumentParser(prog="epub2mp3-cli",
                                      description="Convert an EPUB into MP3 files.")
     parser.add_argument("epub", nargs="?", help="path to the .epub file")
