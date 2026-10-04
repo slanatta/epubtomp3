@@ -27,6 +27,22 @@ MAX_CHUNK = 600
 _SENTENCE_END = re.compile(r"(?<=[.!?\"'’])\s+(?=[\"'“(\[A-Z0-9])")
 _SOFT_SPLIT = re.compile(r"(?<=[,;:])\s+")
 
+# A passage containing no letter or digit has no pronunciation at all. Scene
+# breaks ("* * *"), decorative rules, lone quotation marks and bare ellipses
+# all look like this near the end of a novel. Handing one to Kokoro makes it
+# raise "need at least one array to concatenate" rather than return silence,
+# because the phonemizer yields nothing and there is no audio to join.
+_SPEAKABLE = re.compile(r"[^\W_]", re.UNICODE)
+
+# Pause inserted where an unspeakable paragraph was, so a scene break still
+# reads as a beat instead of vanishing.
+SCENE_BREAK_GAP = 0.9
+
+
+def has_speech(text: str) -> bool:
+    """True if a speech engine could pronounce anything in this text."""
+    return bool(text) and _SPEAKABLE.search(text) is not None
+
 
 # --------------------------------------------------------------------------- #
 # Chunking
@@ -86,9 +102,17 @@ def chunk_text(text: str, target: int = TARGET_CHUNK,
         if current:
             para_chunks.append(Chunk(current, sentence_gap))
 
-        if para_chunks:
-            para_chunks[-1].gap = paragraph_gap
-            chunks.extend(para_chunks)
+        # Keep only what can actually be spoken. A paragraph that is purely
+        # decoration becomes a pause on the chunk before it, which is how a
+        # scene break should sound anyway.
+        speakable = [c for c in para_chunks if has_speech(c.text)]
+        if not speakable:
+            if para_chunks and chunks:
+                chunks[-1].gap = max(chunks[-1].gap, SCENE_BREAK_GAP)
+            continue
+
+        speakable[-1].gap = paragraph_gap
+        chunks.extend(speakable)
 
     if chunks:
         chunks[-1].gap = max(chunks[-1].gap, 0.7)
@@ -247,6 +271,11 @@ class Synthesizer:
 
     def say(self, text: str, voice: str, speed: float,
             lang: str = "en-us") -> np.ndarray:
+        # Nothing pronounceable means nothing to synthesise. Kokoro raises on
+        # this case instead of returning an empty result, so it is caught here
+        # rather than surfacing as a failed passage.
+        if not has_speech(text):
+            return np.zeros(0, dtype=np.float32)
         self.load()
         audio, _sr = self._kokoro.create(text, voice=voice, speed=speed, lang=lang)
         return np.asarray(audio, dtype=np.float32)
