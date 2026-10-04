@@ -6,7 +6,7 @@
 ; ---------------------------------------------------------------------------
 
 #define AppName        "EPUB to MP3"
-#define AppVersion     "1.0.0"
+#define AppVersion     "1.0.1"
 #define AppPublisher   "EPUB to MP3"
 #define AppExeName     "EpubToMP3.exe"
 #define SourceDir      "..\dist\EpubToMP3"

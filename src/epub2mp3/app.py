@@ -24,7 +24,7 @@ from .epubread import Book, read_epub
 from .engine import Progress, Synthesizer, convert_book, list_voices, safe_filename
 
 APP_TITLE = "EPUB to MP3"
-VERSION = "1.0.0"
+VERSION = "1.0.1"
 
 CHARS_PER_SECOND = 14.5      # rough speech rate, for duration estimates
 IS_WINDOWS = sys.platform.startswith("win")
